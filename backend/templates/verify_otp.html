@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ purpose|title }} Verification - VoteSecure{% endblock %}
+
+{% block content %}
+<!--- OTP Verification Page --->
+<div class="container py-5 min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="row w-100">
+        <div class="col-lg-5 col-md-7 mx-auto">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-5">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <div class="mb-4">
+                            <i
+                                class="fas fa-{{ 'user-plus' if purpose == 'registration' else 'sign-in-alt' }} fa-4x text-primary"></i>
+                        </div>
+                        <h2 class="h3 fw-bold text-dark mb-3">{{ purpose|title }} Verification</h2>
+                        <p class="text-muted lead">Enter 6-digit code sent to your email</p>
+                        <small class="text-success fw-bold">
+                            <i class="fas fa-terminal me-1"></i>Check TERMINAL/CONSOLE for OTP!
+                        </small>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div
+                        class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show mb-4 border-0 shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <i
+                                class="fas fa-{{ 'times-circle' if category == 'danger' else 'check-circle' }} me-2 fs-5"></i>
+                            <div dangerouslysetinnerhtml="{{ message|safe }}"></div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- OTP Form -->
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark mb-3 d-block text-center fs-5">
+                                Enter 6-digit OTP
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="text"
+                                    class="form-control form-control-lg text-center fw-bold fs-2 rounded-4 shadow-sm lh-1"
+                                    name="otp" maxlength="6" pattern="[0-9]{6}" placeholder="1 2 3 4 5 6"
+                                    autocomplete="one-time-code" required style="letter-spacing: 0.5rem;">
+                                <span class="input-group-text bg-transparent border-0 px-0">
+                                    <i class="fas fa-key text-muted"></i>
+                                </span>
+                            </div>
+                            <div class="form-text text-center mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Didn't receive? <a href="{{ url_for('resend_otp') }}"
+                                    class="fw-bold text-primary">Resend OTP</a>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit"
+                            class="btn btn-success btn-lg w-100 rounded-4 shadow-lg mb-3 py-3 fw-bold fs-5">
+                            <i class="fas fa-check-circle me-2"></i>
+                            {{ 'Complete Registration' if purpose == 'registration' else 'Login Now' }}
+                        </button>
+                    </form>
+
+                    <!-- Alternative Actions -->
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('register' if purpose == 'registration' else 'email_login') }}"
+                            class="btn btn-outline-secondary rounded-3 fw-medium py-2">
+                            <i class="fas fa-edit me-2"></i>
+                            {{ 'Change Registration Details' if purpose == 'registration' else 'Change Email' }}
+                        </a>
+                    </div>
+
+                    <!-- Console Reminder -->
+                    <div class="alert alert-info border-0 mt-4">
+                        <i class="fas fa-terminal me-2"></i>
+                        <strong>Console OTP:</strong> Terminal/CMD mein check karo! (Black screen)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}VoteSecure - Secure Online Voting{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 text-center bg-gradient"
+    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-top: 80px;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">
+                    <i class="fas fa-vote-yea me-3"></i>
+                    VoteSecure
+                </h1>
+                <p class="lead mb-5 opacity-90 animate__animated animate__fadeInUp">
+                    Secure, Transparent & Anonymous Online Voting Platform
+                </p>
+
+                <!-- 🔥 OTP LOGIN BUTTONS - FIXED -->
+                <div class="d-flex flex-wrap justify-content-center gap-3 mb-4 animate__animated animate__zoomIn">
+                    {% if session.get('otp_sent') %}
+                    <a class="btn btn-success btn-lg px-5 py-3 shadow-lg" href="{{ url_for('verify_email_otp') }}">
+                        <i class="fas fa-mobile-alt me-2"></i>✅ Continue with OTP
+                    </a>
+                    {% else %}
+                    <a class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg" href="{{ url_for('email_login') }}">
+                        <i class="fas fa-envelope me-2"></i>📧 Email Login
+                    </a>
+                    {% endif %}
+
+                    <!-- 🔥 FIXED REGISTER BUTTON -->
+                    <a class="btn btn-light btn-lg px-5 py-3 shadow-lg text-primary fw-bold" href="#">
+                        <i class="fas fa-user-plus me-2"></i>Join Now (Coming Soon)
+                    </a>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body text-center p-4">
+                                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                                <h5>Secure</h5>
+                                <p class="text-muted">End-to-end encryption</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body text-center p-4">
+                                <i class="fas fa-eye-slash fa-3x text-success mb-3"></i>
+                                <h5>Anonymous</h5>
+                                <p class="text-muted">Your vote is private</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body text-center p-4">
+                                <i class="fas fa-chart-bar fa-3x text-warning mb-3"></i>
+                                <h5>Real-time Results</h5>
+                                <p class="text-muted">Live vote counting</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-4">Why Choose VoteSecure?</h2>
+                <p class="lead text-muted">Modern voting platform with cutting-edge security</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-mobile-alt fa-3x text-primary mb-4"></i>
+                        <h4>Easy Access</h4>
+                        <p>Login with Email OTP - No passwords needed!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-lock fa-3x text-success mb-4"></i>
+                        <h4>Bank-level Security</h4>
+                        <p>Your data is encrypted and protected</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-users fa-3x text-info mb-4"></i>
+                        <h4>Community Driven</h4>
+                        <p>Join thousands of secure voters</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+{% endblock %}

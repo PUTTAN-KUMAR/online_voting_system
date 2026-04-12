@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - VoteSecure{% endblock %}
+
+{% block content %}
+<!-- Admin Dashboard Content -->
+<div class="container-fluid py-5 px-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-11 col-lg-10">
+            <!-- Header Section -->
+            <div class="text-center mb-5 animate__animated animate__fadeInDown">
+                <div class="mb-4">
+                    <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
+                    <h1 class="display-4 fw-bold mb-2">Admin Control Panel</h1>
+                    <p class="lead text-muted">Manage Candidates & Elections • Total Votes: {{ total_votes or 0 }}</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-6 col-md-6">
+                    <a href="{{ url_for('add_candidate') }}"
+                        class="btn h-100 text-white shadow-lg p-4 rounded-4 text-decoration-none position-relative overflow-hidden"
+                        style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); min-height: 150px;">
+                        <div class="position-absolute top-0 end-0 p-3">
+                            <i class="fas fa-plus-circle fa-2x opacity-75"></i>
+                        </div>
+                        <div>
+                            <i class="fas fa-user-plus fa-3x mb-3 d-block"></i>
+                            <h3 class="fw-bold mb-2">Add Candidate</h3>
+                            <p class="mb-0 lead">Add new candidate to election</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <a href="{{ url_for('add_election') }}"
+                        class="btn h-100 text-white shadow-lg p-4 rounded-4 text-decoration-none position-relative overflow-hidden"
+                        style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 150px;">
+                        <div class="position-absolute top-0 end-0 p-3">
+                            <i class="fas fa-crown fa-2x opacity-75"></i>
+                        </div>
+                        <div>
+                            <i class="fas fa-trophy fa-3x mb-3 d-block"></i>
+                            <h3 class="fw-bold mb-2">New Election</h3>
+                            <p class="mb-0 lead">Create new election</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4 rounded-3"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <i class="fas fa-users fa-3x mb-3 opacity-75"></i>
+                        <h3 class="fw-bold mb-1">{{ candidates|length }}</h3>
+                        <p class="mb-0 lead opacity-90">Total Candidates</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4 rounded-3"
+                        style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                        <i class="fas fa-vote-yea fa-3x mb-3 opacity-75"></i>
+                        <h3 class="fw-bold mb-1">{{ total_votes or 0 }}</h3>
+                        <p class="mb-0 lead opacity-90">Total Votes</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4 rounded-3"
+                        style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                        <i class="fas fa-chart-line fa-3x mb-3 opacity-75"></i>
+                        <h3 class="fw-bold mb-1">{{ (candidates|selectattr('votes')|map(attribute='votes')|sum /
+                            (candidates|length or 1))|round(0) }}</h3>
+                        <p class="mb-0 lead opacity-90">Avg Votes</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4 rounded-3"
+                        style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                        <i class="fas fa-clock fa-3x mb-3 opacity-75"></i>
+                        <h3 class="fw-bold mb-1">Live</h3>
+                        <p class="mb-0 lead opacity-90">Status</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidates Grid -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h3 fw-bold">
+                            <i class="fas fa-list text-primary me-2"></i>
+                            Candidates List ({{ candidates|length }})
+                        </h2>
+                        <a href="{{ url_for('add_candidate') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>New Candidate
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for candidate in candidates %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-lg overflow-hidden position-relative"
+                        style="border-radius: 20px; border-top: 4px solid #667eea; transition: all 0.3s ease;">
+                        <!-- Candidate Header -->
+                        <div class="card-header bg-gradient-primary text-white py-3 px-4"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="fw-bold mb-0">{{ candidate.name }}</h5>
+                                    <small class="opacity-90">
+                                        <i class="fas fa-flag me-1"></i>{{ candidate.party }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-light text-primary fs-6 px-3 py-2">
+                                    {{ candidate.votes }} Votes
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="card-body p-4">
+                            {% set percentage = ((candidate.votes / (total_votes or 1)) * 100)|round(1) %}
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="h5 fw-bold text-primary">{{ percentage }}%</span>
+                                    <small class="text-muted">Total: {{ total_votes or 0 }}</small>
+                                </div>
+                                <div class="progress rounded-pill" style="height: 16px;">
+                                    <div class="progress-bar bg-gradient-primary rounded-pill" role="progressbar"
+                                        style="width: {{ percentage }}%" aria-valuenow="{{ percentage }}"
+                                        aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('edit_candidate', id=candidate.id) }}"
+                                    class="btn btn-outline-primary border-0 shadow-sm py-2 px-4 rounded-pill fw-semibold">
+                                    <i class="fas fa-edit me-2"></i>Edit Details
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_candidate', id=candidate.id) }}"
+                                    style="display: inline-block;" class="w-100">
+                                    <button type="submit"
+                                        class="btn btn-danger w-100 py-2 px-4 rounded-pill fw-semibold"
+                                        onclick="return confirm('Are you sure you want to delete {{ candidate.name }}? This cannot be undone.')">
+                                        <i class="fas fa-trash me-2"></i>Delete Candidate
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Empty State -->
+                <div class="col-12 text-center py-5 my-5">
+                    <div class="card border-0 shadow-lg mx-auto" style="max-width: 500px;">
+                        <div class="card-body p-5">
+                            <i class="fas fa-users-slash fa-4x text-muted mb-4"></i>
+                            <h3 class="text-muted mb-3">No Candidates Added Yet</h3>
+                            <p class="text-muted mb-4">Get started by adding your first candidate</p>
+                            <a href="{{ url_for('add_candidate') }}" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-plus-circle me-2"></i>Add First Candidate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, #667eea, #764ba2) !important;
+        transition: width 0.6s ease;
+    }
+</style>
+{% endblock %}

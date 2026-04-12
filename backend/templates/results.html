@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Election Results{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold">
+                <i class="fas fa-chart-bar me-2 text-success"></i>Election Results
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for result in results %}
+    <div class="col-lg-6 col-xl-4">
+        <div class="card h-100 shadow-lg border-0">
+            <div class="card-header bg-primary text-white p-4 text-center">
+                <h4 class="fw-bold mb-2">{{ result.name }}</h4>
+                <span class="badge bg-light text-dark fs-6 px-3 py-2">{{ result.party }}</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row text-center">
+                    <div class="col-6 border-end">
+                        <div class="h2 fw-bold text-primary mb-1">{{ result.votes|int }}</div>
+                        <div class="text-muted">Votes</div>
+                    </div>
+                    <div class="col-6">
+                        {% set total_votes = namespace(value=0) %}
+                        {% for r in results %}
+                        {% set total_votes.value = total_votes.value + (r.votes|int) %}
+                        {% endfor %}
+                        {% set percentage = ((result.votes|int) / total_votes.value * 100)|round(1) if total_votes.value > 0 else 0 %}
+                        100)|round(1) : 0) %}
+                        <div class="h3 fw-bold text-success mb-1">{{ percentage }}%</div>
+                        <div class="text-muted">Share</div>
+                    </div>
+                </div>
+                <div class="progress mt-4" style="height: 15px; border-radius: 10px;">
+                    <div class="progress-bar bg-gradient-primary" style="width: {{ percentage }}%; border-radius: 10px;"
+                        role="progressbar">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-5 me-3">
+            <i class="fas fa-home me-2"></i>Dashboard
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg px-5">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </a>
+    </div>
+</div>
+{% endblock %}

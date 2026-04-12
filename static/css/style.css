@@ -1,0 +1,131 @@
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+}
+
+.btn-success {
+    background: var(--success-gradient);
+    border: none;
+}
+
+.card {
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand {
+    font-size: 1.5rem !important;
+}
+
+.fa-vote-yea {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .candidate-card {
+        margin: 10px;
+        border-radius: 15px;
+    }
+}
+
+/* Results Page Styles */
+.results-chart {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.party-badge {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.bjp {
+    background: linear-gradient(135deg, #ff9933, #ff6600);
+    color: white;
+}
+
+.congress {
+    background: linear-gradient(135deg, #1e90ff, #4169e1);
+    color: white;
+}
+
+.aap {
+    background: linear-gradient(135deg, #32cd32, #228b22);
+    color: white;
+}
+
+.tmc {
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    color: white;
+}
+
+/* Loading Animation */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+/* Results Page Perfect Styling */
+.results-card {
+    transition: all 0.3s ease;
+}
+
+.results-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+.party-badge {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.bjp {
+    background: linear-gradient(135deg, #ff9933, #ff6600);
+    color: white;
+}
+
+.congress {
+    background: linear-gradient(135deg, #1e90ff, #4169e1);
+    color: white;
+}
+
+.aap {
+    background: linear-gradient(135deg, #32cd32, #228b22);
+    color: white;
+}
+
+.tmc {
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    color: white;
+}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}{{ position }} - VoteSecure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-4 rounded-top-4">
+                    <h2 class="mb-2 fw-bold">
+                        <i class="fas fa-vote-yea me-3"></i>{{ position | title }}
+                    </h2>
+                    <p class="mb-0 lead opacity-90">Choose your candidate</p>
+                </div>
+                <div class="card-body p-5">
+
+                    {% if candidates %}
+                    <form id="voteForm">
+                        {% for candidate in candidates %}
+                        <div
+                            class="candidate-card mb-4 p-4 border rounded-4 shadow-sm hover-candidate position-relative">
+                            <div class="form-check">
+                                <input class="form-check-input vote-radio" type="radio" name="candidate_id"
+                                    value="{{ candidate.id }}" id="candidate{{ candidate.id }}" required>
+                                <label class="form-check-label w-100 h-100 p-3" for="candidate{{ candidate.id }}">
+                                    <div class="d-flex align-items-center">
+                                        {% if candidate.image %}
+                                        <img src="{{ candidate.image }}" class="rounded-circle me-3"
+                                            style="width: 60px; height: 60px; object-fit: cover;"
+                                            alt="{{ candidate.name }}">
+                                        {% else %}
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                            style="width: 60px; height: 60px;">
+                                            <i class="fas fa-user text-white fs-5"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fw-bold">{{ candidate.name }}</h5>
+                                            <span class="badge bg-secondary fs-6">{{ candidate.party }}</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="text-center mt-5">
+                            <button type="submit"
+                                class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg">
+                                <i class="fas fa-check me-2"></i>
+                                <span class="vote-text">Cast My Vote</span>
+                            </button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users-slash fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted">No candidates available</h4>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">Back to Dashboard</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('voteForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('candidate_id', document.querySelector('input[name="candidate_id"]:checked').value);
+        formData.append('position', '{{ position }}');
+
+        fetch('/cast_vote', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Vote failed! Please try again.');
+            });
+    });
+</script>
+
+<style>
+    .candidate-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .candidate-card:hover {
+        border-color: #0d6efd;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(13, 110, 253, 0.2) !important;
+    }
+
+    .vote-radio:checked+.form-check-label .candidate-card {
+        border-color: #0d6efd;
+        background: linear-gradient(135deg, #0d6efd10, #0d6efd20);
+    }
+</style>
+{% endblock %}
