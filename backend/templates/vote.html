@@ -2,112 +2,174 @@
 {% block title %}{{ position }} - VoteSecure{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header bg-primary text-white text-center py-4 rounded-top-4">
-                    <h2 class="mb-2 fw-bold">
-                        <i class="fas fa-vote-yea me-3"></i>{{ position | title }}
-                    </h2>
-                    <p class="mb-0 lead opacity-90">Choose your candidate</p>
-                </div>
-                <div class="card-body p-5">
+<div class="container-fluid px-0 min-vh-100 bg-gradient"
+    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="row g-0 min-vh-100">
+        <!-- Left Side -->
+        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center p-5">
+            <div class="text-center text-white">
+                <i class="fas fa-vote-yea fa-6x mb-4 opacity-75"></i>
+                <h1 class="display-4 fw-bold mb-4">VoteSecure</h1>
+                <h2 class="h1 fw-bold mb-2 text-dark">
+                    {{ position.replace('_', ' ').title() if position else "All Candidates" }}
+                </h2>
+                <p class="lead">Your vote is secure and anonymous</p>
+            </div>
+        </div>
 
-                    {% if candidates %}
-                    <form id="voteForm">
-                        {% for candidate in candidates %}
-                        <div
-                            class="candidate-card mb-4 p-4 border rounded-4 shadow-sm hover-candidate position-relative">
-                            <div class="form-check">
-                                <input class="form-check-input vote-radio" type="radio" name="candidate_id"
-                                    value="{{ candidate.id }}" id="candidate{{ candidate.id }}" required>
-                                <label class="form-check-label w-100 h-100 p-3" for="candidate{{ candidate.id }}">
-                                    <div class="d-flex align-items-center">
-                                        {% if candidate.image %}
-                                        <img src="{{ candidate.image }}" class="rounded-circle me-3"
-                                            style="width: 60px; height: 60px; object-fit: cover;"
-                                            alt="{{ candidate.name }}">
-                                        {% else %}
-                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
-                                            style="width: 60px; height: 60px;">
-                                            <i class="fas fa-user text-white fs-5"></i>
-                                        </div>
-                                        {% endif %}
-                                        <div class="flex-grow-1">
-                                            <h5 class="mb-1 fw-bold">{{ candidate.name }}</h5>
-                                            <span class="badge bg-secondary fs-6">{{ candidate.party }}</span>
+        <!-- Right Side - Vote Form -->
+        <div class="col-lg-6 col-12 d-flex align-items-center justify-content-center p-4 p-lg-5">
+            <div class="card shadow-2xl border-0 rounded-5 w-100" style="max-width: 500px;">
+                <div class="card-body p-5 p-lg-6">
+                    <div class="text-center mb-5">
+                        <div class="avatar mx-auto mb-4">
+                            <i class="fas fa-voting-check fa-3x text-primary bg-light rounded-circle p-4 shadow-sm"></i>
+                        </div>
+                    <h2 class="h1 fw-bold mb-2 text-dark">
+                        {{ position.replace('_', ' ').title() if position else "All Candidates" }}
+                    </h2>
+                        <p class="text-muted lead mb-0">Choose your candidate</p>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div
+                        class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show mb-4">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <!--  UPDATED FORM SECTION -->
+                <form method="POST" id="voteForm">
+                        <!-- Hidden field for position -->
+                        <input type="hidden" name="position" value="{{ position }}">
+
+                        <div class="candidates-list">
+                            {% for candidate in candidates %}
+                            <div class="candidate-card mb-4 p-4 border rounded-4 shadow-sm hover-candidate"
+                                data-candidate-id="{{ candidate.id }}">
+                                <div class="d-flex align-items-center">
+                                    {% if candidate.image %}
+                                    <img src="{{ candidate.image }}" class="rounded-circle me-4 shadow-sm"
+                                        style="width: 70px; height: 70px; object-fit: cover;"
+                                        alt="{{ candidate.name }}">
+                                    {% else %}
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-4 shadow-sm"
+                                        style="width: 70px; height: 70px;">
+                                        <i class="fas fa-user fa-2x text-white"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1 fw-bold">{{ candidate.name }}</h5>
+                                        <span
+                                            class="badge bg-{{ 'success' if candidate.party == 'BJP' else 'primary' if candidate.party == 'Congress' else 'info' }} fs-6">
+                                            {{ candidate.party }}
+                                        </span>
+                                        <div class="mt-1">
+                                            <small class="text-muted">
+                                                <i class="fas fa-vote-yea me-1"></i>{{ candidate.votes or 0 }} votes
+                                            </small>
                                         </div>
                                     </div>
-                                </label>
+                                    <!--  HIDDEN RADIO BUTTON -->
+                                <input type="radio" name="candidate" value="{{ candidate.id }}"
+                                    class="form-check-input position-absolute top-50 end-0 translate-middle"
+                                    style="transform: translate(50%, -50%); width: 22px; height: 22px; accent-color: #667eea;" required>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
 
-                        <div class="text-center mt-5">
-                            <button type="submit"
-                                class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg">
-                                <i class="fas fa-check me-2"></i>
-                                <span class="vote-text">Cast My Vote</span>
-                            </button>
-                        </div>
+                        <!-- Vote Button -->
+                        <button type="submit" id="submitVote"
+                            class="btn btn-success btn-lg w-100 rounded-4 shadow-lg py-4 fw-bold mb-3">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            <strong>Confirm Vote</strong>
+                        </button>
+
+                        <a href="{{ url_for('dashboard') }}"
+                            class="btn btn-outline-secondary btn-lg w-100 rounded-4 py-3">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
                     </form>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-users-slash fa-4x text-muted mb-4"></i>
-                        <h4 class="text-muted">No candidates available</h4>
-                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">Back to Dashboard</a>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    document.getElementById('voteForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('candidate_id', document.querySelector('input[name="candidate_id"]:checked').value);
-        formData.append('position', '{{ position }}');
-
-        fetch('/cast_vote', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    window.location.href = '/dashboard';
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                alert('Vote failed! Please try again.');
-            });
-    });
-</script>
-
 <style>
-    .candidate-card {
+    .hover-candidate {
         transition: all 0.3s ease;
         cursor: pointer;
         border: 2px solid transparent;
+        position: relative;
     }
 
-    .candidate-card:hover {
-        border-color: #0d6efd;
+    .hover-candidate:hover {
+        border-color: #667eea;
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(13, 110, 253, 0.2) !important;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
     }
 
-    .vote-radio:checked+.form-check-label .candidate-card {
-        border-color: #0d6efd;
-        background: linear-gradient(135deg, #0d6efd10, #0d6efd20);
+    .candidate-card.selected {
+        border-color: #28a745 !important;
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+    }
+
+    .shadow-2xl {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Visual selection effect
+        document.querySelectorAll('.candidate-card').forEach(card => {
+            card.addEventListener('click', function () {
+                // Remove previous selection
+                document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+                // Add selection to clicked card
+                this.classList.add('selected');
+
+                // Auto-check radio button
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    radio.focus();
+                }
+            });
+        });
+
+        // Form validation & loading
+        document.getElementById('voteForm').addEventListener('submit', function (e) {
+            const submitBtn = document.getElementById('submitVote');
+            const checkedRadio = document.querySelector('input[name="candidate"]:checked');
+
+            if (!checkedRadio) {
+                e.preventDefault();
+                alert('Please select a candidate first!');
+                return false;
+            }
+
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i><strong>Submitting Vote...</strong>';
+            submitBtn.disabled = true;
+        });
+    });
+</script>
 {% endblock %}

@@ -212,7 +212,7 @@
                     </li>
                 </ul>
 
-                <!-- Features Section (Sirf Live Results aur Admin buttons) -->
+                <!-- Features Section (Live Results & Admin buttons) -->
                 <div class="features-section">
                     <div class="feature-card" data-bs-toggle="modal" data-bs-target="#resultsModal">
                         <i class="fas fa-chart-line"></i> Live Results
@@ -221,53 +221,51 @@
                         <i class="fas fa-tachometer-alt"></i> Admin
                     </div>
                 </div>
-                <!-- User Section (base.html ke navbar mein) -->
-<div class="d-flex align-items-center ms-3">
-    {% if session.user_id %}
-    <!-- <a class="nav-link me-3" href="{{ url_for('results') }}">
-        <i class="fas fa-chart-bar"></i> Results
-    </a> -->
-    {% if session.role == 'admin' %}
-    <a class="nav-link me-3" href="{{ url_for('admin') }}">
-        <i class="fas fa-user-shield"></i> Admin
-    </a>
-    <!-- NEW ADMIN BUTTONS ON HOMEPAGE -->
-    <div class="dropdown">
-        <button class="btn btn-outline-light dropdown-toggle px-3 py-1" type="button" data-bs-toggle="dropdown">
-            <i class="fas fa-plus me-1"></i>Actions
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('add_candidate') }}">
-                <i class="fas fa-user-plus me-2 text-success"></i>Add Candidate
-            </a></li>
-            <li><a class="dropdown-item" href="{{ url_for('add_election') }}">
-                <i class="fas fa-crown me-2 text-warning"></i>New Election
-            </a></li>
-        </ul>
-    </div>
-    {% endif %}
-    {% endif %}
-</div>
 
-                <!-- User Section -->
+                <!-- User Section - CLEANED UP -->
                 <div class="d-flex align-items-center ms-3">
                     {% if session.user_id %}
+                    {% if session.role == 'admin' %}
+                    <!-- Admin Dropdown Actions -->
+                    <div class="dropdown me-3">
+                        <button class="btn btn-outline-light dropdown-toggle px-3 py-1" type="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-plus me-1"></i>Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('add_candidate') }}">
+                                    <i class="fas fa-user-plus me-2 text-success"></i>Add Candidate
+                                </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_election') }}">
+                                    <i class="fas fa-crown me-2 text-warning"></i>New Election
+                                </a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Results Link for all logged-in users -->
                     <a class="nav-link me-3" href="{{ url_for('results') }}">
                         <i class="fas fa-chart-bar"></i> Results
                     </a>
+
+                    <!-- Admin Link for admin users only -->
                     {% if session.role == 'admin' %}
                     <a class="nav-link me-3" href="{{ url_for('admin') }}">
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
                     {% endif %}
+                    {% else %}
+                    <!-- Login button for non-logged-in users -->
+                    <a class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg" href="{{ url_for('index') }}">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- ALL WORKING MODALS (Secure & Smart Verify modals removed) -->
-
+    <!-- ALL WORKING MODALS -->
     <!-- Home Modal -->
     <div class="modal fade feature-modal" id="homeModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -311,7 +309,7 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <h5>✅ What We Offer:</h5>
+                            <h5> What We Offer:</h5>
                             <ul class="list-unstyled">
                                 <li><i class="fas fa-check-circle text-success me-2"></i>100% Secure Voting</li>
                                 <li><i class="fas fa-check-circle text-success me-2"></i>Real-time Results</li>
@@ -366,7 +364,7 @@
         </div>
     </div>
 
-    <!-- Contact Modal -->
+    <!-- Contact Modal - FIXED -->
     <div class="modal fade feature-modal" id="contactModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -394,7 +392,8 @@
                         </div>
                         <div class="col-md-6">
                             <h5>Quick Message</h5>
-                            <form>
+                            <!-- FIXED: ID added to contact form only -->
+                            <form id="contact-form">
                                 <div class="mb-3">
                                     <input type="text" class="form-control" placeholder="Your Name">
                                 </div>
@@ -413,7 +412,7 @@
         </div>
     </div>
 
-    <!-- 2 Main Feature Modals (Live Results & Admin only) -->
+    <!-- Live Results Modal -->
     <div class="modal fade feature-modal" id="resultsModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -430,6 +429,7 @@
         </div>
     </div>
 
+    <!-- Admin Modal -->
     <div class="modal fade feature-modal" id="adminModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -440,130 +440,146 @@
                 </div>
                 <div class="modal-body text-center">
                     <h3>⚡ Complete Control</h3>
-                    <p class="lead">Manage everything from one dashboard.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <p class="lead">Manage everything from one dashboard.
+                                    </div>
+                                    </div>
+                                    </div>
+                                    </div>
+                                    
+                                    <!-- Main Content -->
+                                    <div class="container-fluid mt-5 pt-4">
+                                        {% with messages = get_flashed_messages(with_categories=true) %}
+                                        {% if messages %}
+                                        {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'danger' if category == 'danger' else category }} alert-dismissible fade show shadow-sm mx-4 mt-3"
+                                            role="alert">
+                                            <i class="fas fa-{{ 'times-circle' if category == 'danger' else 'check-circle' }} me-2"></i>
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                        {% endfor %}
+                                        {% endif %}
+                                        {% endwith %}
+                                    
+                                        {% block content %}{% endblock %}
+                                    </div>
+                                    
+                                    <!-- Footer -->
+                                    <footer class="bg-dark text-light py-5 mt-5">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h5><i class="fas fa-vote-yea me-2 text-primary"></i>VoteSecure</h5>
+                                                    <p class="mb-0 opacity-75">Secure & Transparent Online Voting Platform</p>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h6>Quick Links</h6>
+                                                    <ul class="list-unstyled">
+                                                        <li><a href="#" class="text-light text-decoration-none opacity-75" data-bs-toggle="modal"
+                                                                data-bs-target="#homeModal">Home</a></li>
+                                                        <li><a href="#" class="text-light text-decoration-none opacity-75" data-bs-toggle="modal"
+                                                                data-bs-target="#aboutModal">About</a></li>
+                                                        <li><a href="#" class="text-light text-decoration-none opacity-75" data-bs-toggle="modal"
+                                                                data-bs-target="#featuresModal">Features</a></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h6>Contact</h6>
+                                                    <p class="mb-1"><i class="fas fa-envelope me-2"></i>support@votesecure.com</p>
+                                                    <p><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+                                                </div>
+                                            </div>
+                                            <hr class="my-4">
+                                            <div class="text-center">
+                                                <p class="mb-0 opacity-75">&copy; 2024 VoteSecure. All rights reserved.</p>
+                                            </div>
+                                        </div>
+                                    </footer>
+                                    
+                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+                                    <script>
+                                        // Ripple effect for all clickable cards
+                                        document.addEventListener('click', function (e) {
+                                            let target = e.target.closest('.feature-card, .nav-link');
+                                            if (target) {
+                                                // Create ripple
+                                                const ripple = document.createElement('span');
+                                                ripple.style.position = 'absolute';
+                                                ripple.style.borderRadius = '50%';
+                                                ripple.style.background = 'rgba(255,255,255,0.6)';
+                                                ripple.style.transform = 'scale(0)';
+                                                ripple.style.animation = 'ripple 0.6s linear';
+                                                ripple.style.left = (e.clientX - target.getBoundingClientRect().left) + 'px';
+                                                ripple.style.top = (e.clientY - target.getBoundingClientRect().top) + 'px';
+                                                ripple.style.width = ripple.style.height = '50px';
 
-    <!-- Main Content -->
-    <div class="container-fluid mt-5 pt-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ 'danger' if category == 'danger' else category }} alert-dismissible fade show shadow-sm mx-4 mt-3"
-            role="alert">
-            <i class="fas fa-{{ 'times-circle' if category == 'danger' else 'check-circle' }} me-2"></i>
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+                                                target.style.position = 'relative';
+                                                target.style.overflow = 'hidden';
+                                                target.appendChild(ripple);
 
-        {% block content %}{% endblock %}
-    </div>
+                                                setTimeout(() => {
+                                                    ripple.remove();
+                                                }, 600);
+                                            }
+                                        });
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-5 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                 <h5><i class="fas fa-vote-yea me-2 text-primary"></i>VoteSecure</h5>
-                    <p class="mb-0 opacity-75">Secure & Transparent Online Voting Platform</p>
-                </div>
-                <div class="col-md-3">
-                    <h6>Quick Links</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none opacity-75" data-bs-toggle="modal"
-                                data-bs-target="#homeModal">Home</a></li>
-                        <li><a href="#" class="text-light text-decoration-none opacity-75" data-bs-toggle="modal"
-                                data-bs-target="#aboutModal">About</a></li>
-                        <li><a href="#" class="text-light text-decoration-none opacity-75" data-bs-toggle="modal"
-                                data-bs-target="#featuresModal">Features</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h6>Contact</h6>
-                    <p class="mb-1"><i class="fas fa-envelope me-2"></i>support@votesecure.com</p>
-                    <p><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="text-center">
-                <p class="mb-0 opacity-75">&copy; 2024 VoteSecure. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Ripple effect for all clickable cards
-        document.addEventListener('click', function (e) {
-            let target = e.target.closest('.feature-card, .nav-link');
-            if (target) {
-                // Create ripple
-                const ripple = document.createElement('span');
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255,255,255,0.6)';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s linear';
-                ripple.style.left = (e.clientX - target.getBoundingClientRect().left) + 'px';
-                ripple.style.top = (e.clientY - target.getBoundingClientRect().top) + 'px';
-                ripple.style.width = ripple.style.height = '50px';
+                                        // Add ripple animation CSS
+                                        const style = document.createElement('style');
+                                        style.textContent = `
+                                                @keyframes ripple {
+                                                    to {
+                                                        transform: scale(4);
+                                                        opacity: 0;
+                                                    }
+                                                }
+                                            `;
+                                        document.head.appendChild(style);
 
-                target.style.position = 'relative';
-                target.style.overflow = 'hidden';
-                target.appendChild(ripple);
+                                        // Auto-close modals on outside click (optional)
+                                        var modals = document.querySelectorAll('.modal');
+                                        modals.forEach(function (modal) {
+                                            modal.addEventListener('hidden.bs.modal', function () {
+                                                console.log('Modal closed: ' + this.id);
+                                            });
+                                        });
 
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            }
-        });
+                                        // Smooth scrolling backup (if needed)
+                                        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                                            anchor.addEventListener('click', function (e) {
+                                                e.preventDefault();
+                                                const targetId = this.getAttribute('href').substring(1);
+                                                const targetModal = document.getElementById(targetId + 'Modal');
+                                                if (targetModal) {
+                                                    var modal = new bootstrap.Modal(targetModal);
+                                                    modal.show();
+                                                }
+                                            });
+                                        });
 
-        // Add ripple animation CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+                                        // FIXED: सिर्फ CONTACT FORM को target करें - LOGIN FORMS SAFE!
+                                        const contactForm = document.querySelector('#contact-form');
+                                        if (contactForm) {
+                                            contactForm.addEventListener('submit', function (e) {
+                                                e.preventDefault();
+                                                alert('Message sent successfully! We will contact you soon.');
+                                                this.reset();
+                                                var contactModal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
+                                                if (contactModal) {
+                                                    contactModal.hide();
+                                                }
+                                            });
+                                        }
 
-        // Auto-close modals on outside click (optional)
-        var modals = document.querySelectorAll('.modal');
-        modals.forEach(function (modal) {
-            modal.addEventListener('hidden.bs.modal', function () {
-                console.log('Modal closed: ' + this.id);
-            });
-        });
-
-        // Smooth scrolling backup (if needed)
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetModal = document.getElementById(targetId + 'Modal');
-                if (targetModal) {
-                    var modal = new bootstrap.Modal(targetModal);
-                    modal.show();
-                }
-            });
-        });
-
-        // Contact form demo
-        document.querySelector('form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Message sent successfully! We will contact you soon.');
-            this.reset();
-            var contactModal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
-            contactModal.hide();
-        });
-    </script>
-</body>
-</html>
+                                        // Navbar scroll fix for fixed-top
+                                        window.addEventListener('scroll', function () {
+                                            const navbar = document.querySelector('.navbar');
+                                            if (window.scrollY > 50) {
+                                                navbar.style.background = 'rgba(102, 126, 234, 0.95)';
+                                            } else {
+                                                navbar.style.background = 'var(--primary)';
+                                            }
+                                        });
+                                    </script>
+                                    </body>
+                                    
+                                    </html>

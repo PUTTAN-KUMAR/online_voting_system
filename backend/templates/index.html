@@ -17,21 +17,23 @@
                     Secure, Transparent & Anonymous Online Voting Platform
                 </p>
 
-                <!-- 🔥 OTP LOGIN BUTTONS - FIXED -->
+                <!-- 🔥 FIXED LOGIN BUTTONS -->
                 <div class="d-flex flex-wrap justify-content-center gap-3 mb-4 animate__animated animate__zoomIn">
                     {% if session.get('otp_sent') %}
                     <a class="btn btn-success btn-lg px-5 py-3 shadow-lg" href="{{ url_for('verify_email_otp') }}">
                         <i class="fas fa-mobile-alt me-2"></i>✅ Continue with OTP
                     </a>
                     {% else %}
-                    <a class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg" href="{{ url_for('email_login') }}">
+                    <!-- ✅ FIXED: email_login → login -->
+                    <a class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg" href="{{ url_for('login') }}">
                         <i class="fas fa-envelope me-2"></i>📧 Email Login
                     </a>
                     {% endif %}
 
-                    <!-- 🔥 FIXED REGISTER BUTTON -->
-                    <a class="btn btn-light btn-lg px-5 py-3 shadow-lg text-primary fw-bold" href="#">
-                        <i class="fas fa-user-plus me-2"></i>Join Now (Coming Soon)
+                    <!-- Register Button -->
+                    <a class="btn btn-light btn-lg px-5 py-3 shadow-lg text-primary fw-bold"
+                        href="{{ url_for('register') }}">
+                        <i class="fas fa-user-plus me-2"></i>Join Now
                     </a>
                 </div>
 
