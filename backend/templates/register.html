@@ -1,336 +1,289 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Register - VoteSecure{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - VoteSecure</title>
 
-{% block content %}
-<div class="container-fluid px-0 min-vh-100 bg-gradient"
-    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="row g-0 min-vh-100">
-        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center p-5">
-            <div class="text-center text-white">
-                <i class="fas fa-vote-yea fa-6x mb-4 opacity-75"></i>
-                <h1 class="display-4 fw-bold mb-4">VoteSecure</h1>
-                <h4 class="lead mb-4">Secure Voting System</h4>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        #otpInput {
+            border: 2px solid #28a745 !important;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+            font-size: 24px !important;
+            font-family: 'Courier New', monospace;
+            height: 70px;
+            letter-spacing: 0.3em;
+            transition: all 0.3s ease;
+        }
+
+        #otpInput:focus {
+            border-color: #198754 !important;
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+            transform: scale(1.02);
+        }
+
+        .card {
+            border-radius: 20px;
+        }
+
+        .btn {
+            border-radius: 50px;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid px-0 min-vh-100">
+        <div class="row g-0 min-vh-100 align-items-center">
+            <!-- Left Side Image -->
+            <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center p-5 text-white">
+                <div class="text-center">
+                    <i class="fas fa-vote-yea fa-6x mb-4 opacity-75"></i>
+                    <h1 class="display-4 fw-bold mb-4">VoteSecure</h1>
+                    <h4 class="lead">Secure Voting System</h4>
+                </div>
             </div>
-        </div>
 
-        <div class="col-lg-6 col-12 d-flex align-items-center justify-content-center p-4 p-lg-5">
-            <div class="card shadow-lg border-0 rounded-5 w-100" style="max-width: 450px;">
-                <div class="card-body p-5">
-                    <div class="text-center mb-5">
-                        <i class="fas fa-user-plus fa-4x text-primary mb-3"></i>
-                        <h2 class="h1 fw-bold mb-2">Register</h2>
-                        <p class="text-muted">Complete registration with OTP verification</p>
-                    </div>
+            <!-- Right Side Form -->
+            <div class="col-lg-6 col-12 p-4 p-lg-5">
+                <div class="card shadow-lg border-0 mx-auto" style="max-width: 450px;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-5">
+                            <i class="fas fa-user-plus fa-4x text-primary mb-3"></i>
+                            <h2 class="h1 fw-bold mb-2">Register</h2>
+                            <p class="text-muted">Complete your voter registration</p>
+                        </div>
 
-                    <!-- Flash Messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    {% for category, message in messages %}
-                    <div
-                        class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'warning' }} alert-dismissible fade show mb-4">
-                        <div>{{ message | safe }}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                    {% endwith %}
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'warning' }} alert-dismissible fade show mb-4"
+                            role="alert">
+                            {{ message | safe }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
 
-                    <!-- STEP 1: USER DETAILS FORM -->
-                    <div id="step1" class="step-section">
-                        <form id="registerForm">
-                            <!-- Username -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-user text-primary me-2"></i>Username *
-                                </label>
-                                <input type="text" class="form-control form-control-lg" id="username" name="username"
-                                    required>
-                            </div>
+                        <!-- STEP 1: Registration Form -->
+                        <div id="step1">
+                            <form id="registerForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-user text-primary me-2"></i>Username *
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="username"
+                                        name="username" required>
+                                </div>
 
-                            <!-- Email -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-envelope text-primary me-2"></i>Email *
-                                </label>
-                                <input type="email" class="form-control form-control-lg" id="email" name="email"
-                                    value="{{ email or '' }}" required>
-                            </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-envelope text-primary me-2"></i>Email *
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email"
+                                        value="{{ email or '' }}" required>
+                                </div>
 
-                            <!-- Aadhaar -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-id-card text-primary me-2"></i>Aadhaar Number (12 digits) *
-                                </label>
-                                <input type="text" class="form-control form-control-lg" id="aadhaar" name="aadhaar"
-                                    maxlength="12" required>
-                            </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-id-card text-primary me-2"></i>Aadhaar (12 digits) *
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="aadhaar" name="aadhaar"
+                                        maxlength="12" required>
+                                </div>
 
-                            <!-- Mobile -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-mobile-alt text-primary me-2"></i>Mobile Number (10 digits) *
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-primary">+91</span>
-                                    <input type="tel" class="form-control form-control-lg" id="mobile" name="mobile"
-                                        maxlength="10" required>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-mobile-alt text-primary me-2"></i>Mobile (10 digits) *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-primary">+91</span>
+                                        <input type="tel" class="form-control form-control-lg" id="mobile" name="mobile"
+                                            maxlength="10" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-lock text-primary me-2"></i>Password *
+                                    </label>
+                                    <input type="password" class="form-control form-control-lg" id="password"
+                                        name="password" minlength="8" required>
+                                </div>
+
+                                <button type="button" id="sendOtpBtn" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
+                                    <i class="fas fa-paper-plane me-2"></i>Send OTP to Email
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- STEP 2: OTP Verification -->
+                        <div id="step2" style="display: none;">
+                            <div class="text-center mb-4 p-4 border rounded-3 bg-light">
+                                <i class="fas fa-envelope-open-text fa-3x text-success mb-3"></i>
+                                <h5 class="text-success fw-bold mb-1">OTP Sent!</h5>
+                                <p class="text-muted mb-2">Check your email inbox</p>
+                                <div id="emailDisplay"
+                                    class="fw-semibold text-primary fs-6 bg-white px-3 py-2 rounded-pill border d-inline-block">
                                 </div>
                             </div>
 
-                            <!-- Password -->
                             <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-lock text-primary me-2"></i>Password (Minimum 6 characters) *
+                                <label class="form-label fw-bold fs-5">
+                                    <i class="fas fa-key text-success me-2"></i>Enter 6-digit OTP
                                 </label>
-                                <input type="password" class="form-control form-control-lg" id="password"
-                                    name="password" minlength="6" required>
+                                <input type="text" class="form-control form-control-lg text-center fw-bold fs-2 lh-1"
+                                    id="otpInput" maxlength="6" placeholder="123456" autocomplete="one-time-code">
+                                <div class="form-text text-center mt-2">
+                                    <span id="timer" class="badge bg-warning">10:00</span>
+                                </div>
                             </div>
 
-                            <button type="button" id="sendOtpBtn"
-                                class="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-pill shadow-sm">
-                                <span class="btn-text"><i class="fas fa-paper-plane me-2"></i>Send OTP</span>
-                                <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+                            <button type="button" id="verifyOtpBtn"
+                                class="btn btn-success btn-lg w-100 py-3 fw-bold mb-3">
+                                <i class="fas fa-check-circle me-2"></i>Verify & Register
                             </button>
-                        </form>
-                    </div>
-
-                    <!-- STEP 2: OTP VERIFICATION -->
-                    <div id="step2" class="step-section" style="display: none;">
-                        <div class="text-center mb-4 p-4 border rounded-3 bg-light-subtle">
-                            <i class="fas fa-envelope-open-text fa-3x text-success mb-3"></i>
-                            <h5 class="text-success fw-bold mb-1">OTP Sent Successfully!</h5>
-                            <p class="text-muted mb-2">6-digit code sent to your terminal/console</p>
-                            <div id="emailDisplay"
-                                class="fw-semibold text-primary fs-6 bg-white px-3 py-2 rounded-pill border"></div>
-                            <small class="text-success"><i class="fas fa-terminal me-1"></i>Check server terminal for
-                                OTP</small>
+                            <button type="button" id="resendOtpBtn" class="btn btn-outline-secondary w-100 py-2">
+                                <i class="fas fa-redo me-2"></i>Change Details
+                            </button>
                         </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold fs-5">
-                                <i class="fas fa-key text-success me-2"></i>Enter OTP Code
-                            </label>
-                            <input type="text" class="form-control form-control-lg text-center fw-bold fs-2 lh-1"
-                                id="otpInput" maxlength="6" placeholder="123456" autocomplete="one-time-code"
-                                style="font-family: 'Courier New', monospace; letter-spacing: 0.3em; height: 70px;">
-                            <div class="form-text text-center mt-2">
-                                <span id="timer" class="badge bg-warning">10:00</span>
-                                <span id="otpHint" class="text-muted ms-2">Terminal में OTP देखें</span>
-                            </div>
-                        </div>
-
-                        <button type="button" id="verifyOtpBtn"
-                            class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-pill shadow-sm mb-3">
-                            <span class="btn-text"><i class="fas fa-check-circle me-2"></i>Verify OTP & Register</span>
-                            <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
-                        </button>
-
-                        <button type="button" id="resendOtpBtn"
-                            class="btn btn-outline-secondary w-100 py-2 rounded-pill">
-                            <i class="fas fa-redo me-2"></i>Edit Details & Resend OTP
-                        </button>
                     </div>
+                </div>
 
-                    <!-- Footer -->
-                    <div class="text-center mt-4 pt-3 border-top">
-                        <p class="text-muted mb-0 small">
-                            Already have an account?
-                            <a href="{{ url_for('login') }}" class="fw-bold text-primary text-decoration-none">Login
-                                here</a>
-                        </p>
-                    </div>
+                <div class="text-center mt-4">
+                    <p class="text-white mb-0 small">
+                        Already registered? <a href="{{ url_for('login') }}" class="fw-bold text-white">Login here</a>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<style>
-    #otpInput {
-        border: 2px solid #28a745 !important;
-        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-        font-size: 24px !important;
-        height: 70px;
-        transition: all 0.3s ease;
-    }
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    #otpInput:focus {
-        border-color: #198754 !important;
-        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
-        transform: scale(1.02);
-    }
+    <script>
+        let formData = {};
+        let otpTimer = null;
+        let timeLeft = 600;
 
-    .step-section {
-        transition: opacity 0.4s ease, transform 0.4s ease;
-    }
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('✅ Register page loaded!');
 
-    .step-section.hidden {
-        opacity: 0;
-        transform: translateY(20px);
-        pointer-events: none;
-    }
+            // Numeric input formatting
+            ['aadhaar', 'mobile', 'otpInput'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('input', function () {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        if (this.id === 'otpInput' && this.value.length === 6) {
+                            setTimeout(verifyOtp, 500);
+                        }
+                    });
+                }
+            });
 
-    .btn:active {
-        transform: translateY(-1px);
-    }
-
-    .bg-light-subtle {
-        background-color: rgba(248, 249, 250, 0.8) !important;
-    }
-</style>
-
-<script>
-    let formData = {};
-    let otpTimer = null;
-    let timeLeft = 600;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log(' DOM Loaded - Register Script Ready!');
-
-        //  Input formatting
-        const numericInputs = ['aadhaar', 'mobile', 'otpInput'];
-        numericInputs.forEach(id => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.addEventListener('input', function (e) {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.id === 'otpInput' && this.value.length === 6) {
-                        // Auto verify after 500ms
-                        setTimeout(() => {
-                            verifyOtp();
-                        }, 500);
-                    }
-                });
-            }
+            // Button events
+            document.getElementById('sendOtpBtn').addEventListener('click', sendOtp);
+            document.getElementById('verifyOtpBtn').addEventListener('click', verifyOtp);
+            document.getElementById('resendOtpBtn').addEventListener('click', goBackToStep1);
         });
 
-        // Event Listeners - Properly attached
-        const sendBtn = document.getElementById('sendOtpBtn');
-        const verifyBtn = document.getElementById('verifyOtpBtn');
-        const resendBtn = document.getElementById('resendOtpBtn');
+        function sendOtp() {
+            // Collect data
+            formData.username = document.getElementById('username').value.trim();
+            formData.email = document.getElementById('email').value.trim().toLowerCase();
+            formData.aadhaar = document.getElementById('aadhaar').value.trim();
+            formData.mobile = document.getElementById('mobile').value.trim();
+            formData.password = document.getElementById('password').value.trim();
 
-        if (sendBtn) sendBtn.addEventListener('click', sendOtp);
-        if (verifyBtn) verifyBtn.addEventListener('click', verifyOtp);
-        if (resendBtn) resendBtn.addEventListener('click', goBackToStep1);
+            // Validation
+            if (!formData.username || !formData.email || !formData.aadhaar || !formData.mobile || !formData.password) {
+                alert('Fill all fields!');
+                return;
+            }
+            if (formData.aadhaar.length !== 12 || formData.mobile.length !== 10 || formData.password.length < 8) {
+                alert('Check Aadhaar(12), Mobile(10), Password(8+)!');
+                return;
+            }
 
-        console.log('All buttons attached!');
-    });
+            const btn = document.getElementById('sendOtpBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
 
-    // SEND OTP FUNCTION
-    function sendOtp() {
-        console.log('Send OTP clicked!');
-
-        // Collect form data
-        formData.username = document.getElementById('username').value.trim();
-        formData.email = document.getElementById('email').value.trim().toLowerCase();
-        formData.aadhaar = document.getElementById('aadhaar').value.trim();
-        formData.mobile = document.getElementById('mobile').value.trim();
-        formData.password = document.getElementById('password').value.trim();
-
-        // Validation
-        if (!formData.username || !formData.email || !formData.aadhaar || !formData.mobile || !formData.password) {
-            showAlert('Please fill all fields!', 'danger');
-            return;
-        }
-        if (formData.aadhaar.length !== 12 || !/^\d{12}$/.test(formData.aadhaar)) {
-            showAlert('Aadhaar must be 12 digits!', 'danger');
-            return;
-        }
-        if (formData.mobile.length !== 10 || !/^\d{10}$/.test(formData.mobile)) {
-            showAlert('Mobile must be 10 digits!', 'danger');
-            return;
-        }
-        if (formData.password.length < 6) {
-            showAlert('Password must be at least 6 characters!', 'danger');
-            return;
-        }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            showAlert('Enter valid email!', 'danger');
-            return;
-        }
-
-        const btn = document.getElementById('sendOtpBtn');
-        toggleLoading(btn, true);
-
-        fetch('/send-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: formData.email })
-        })
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                return response.json();
+            fetch('/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email })
             })
-            .then(data => {
-                toggleLoading(btn, false);
-                console.log('Send OTP Response:', data);
+                .then(r => r.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Send OTP to Email';
 
-                if (data.success) {
-                    // Show step 2
-                    document.getElementById('step1').style.display = 'none';
-                    document.getElementById('step2').style.display = 'block';
-                    document.getElementById('emailDisplay').textContent = formData.email;
-                    document.getElementById('otpInput').focus();
-
-                    // Start timer
-                    timeLeft = 600;
-                    startOtpTimer();
-
-                    showAlert('OTP sent! Check server TERMINAL ', 'success');
-                } else {
-                    showAlert(data.error || 'Failed to send OTP!', 'danger');
-                }
-            })
-            .catch(error => {
-                toggleLoading(btn, false);
-                console.error('Send OTP Error:', error);
-                showAlert('Network error! Check terminal for OTP', 'danger');
-            });
-    }
-
-    //  VERIFY OTP FUNCTION - FIXED!
-    function verifyOtp() {
-        console.log(' Verify OTP clicked!');
-
-        const otp = document.getElementById('otpInput').value.trim();
-        console.log('OTP entered:', otp);
-
-        if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
-            showAlert('Enter valid 6-digit OTP!', 'danger');
-            document.getElementById('otpInput').focus();
-            return;
+                    if (data.success) {
+                        document.getElementById('step1').style.display = 'none';
+                        document.getElementById('step2').style.display = 'block';
+                        document.getElementById('emailDisplay').textContent = formData.email;
+                        document.getElementById('otpInput').focus();
+                        timeLeft = 600;
+                        startOtpTimer();
+                        alert('✅ OTP sent to ' + formData.email + '\nCheck your email!');
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Send OTP to Email';
+                    alert('Network error! Check console.');
+                    console.error(err);
+                });
         }
 
-        const btn = document.getElementById('verifyOtpBtn');
-        toggleLoading(btn, true);
+        function verifyOtp() {
+            const otp = document.getElementById('otpInput').value.trim();
+            if (otp.length !== 6) {
+                alert('Enter 6-digit OTP!');
+                return;
+            }
 
-        //  Step 1: Verify OTP via AJAX
-        fetch('/verify-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ otp: otp })
-        })
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                return response.json();
+            const btn = document.getElementById('verifyOtpBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verifying...';
+
+            fetch('/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp: otp })
             })
-            .then(data => {
-                console.log(' Verify OTP Response:', data);
-                toggleLoading(btn, false);
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ OTP Verified! Registering...');
 
-                if (data.success) {
-                    showAlert(' OTP Verified! Registering...', 'success');
-
-                    //  Step 2: Submit registration form after 1 second
-                    setTimeout(() => {
-                        console.log(' Submitting registration form...');
+                        // Submit form
                         const form = document.createElement('form');
                         form.method = 'POST';
                         form.action = '/register';
-                        form.style.display = 'none';
 
-                        // Add all form data
                         Object.entries(formData).forEach(([key, value]) => {
                             const input = document.createElement('input');
                             input.type = 'hidden';
@@ -341,85 +294,43 @@
 
                         document.body.appendChild(form);
                         form.submit();
-                    }, 1000);
-                } else {
-                    showAlert(' ' + (data.error || 'Invalid OTP!'), 'danger');
-                    document.getElementById('otpInput').value = '';
-                    document.getElementById('otpInput').focus();
+                    } else {
+                        alert('❌ ' + data.error);
+                        document.getElementById('otpInput').value = '';
+                        document.getElementById('otpInput').focus();
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verify & Register';
+                })
+                .catch(err => {
+                    alert('Network error!');
+                    console.error(err);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verify & Register';
+                });
+        }
+
+        function goBackToStep1() {
+            if (otpTimer) clearInterval(otpTimer);
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('otpInput').value = '';
+        }
+
+        function startOtpTimer() {
+            otpTimer = setInterval(() => {
+                timeLeft--;
+                const min = Math.floor(timeLeft / 60);
+                const sec = timeLeft % 60;
+                document.getElementById('timer').textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimer);
+                    document.getElementById('timer').innerHTML = '<i class="fas fa-clock text-danger"></i> Expired';
                 }
-            })
-            .catch(error => {
-                toggleLoading(btn, false);
-                console.error(' Verify OTP Error:', error);
-                showAlert('Network error! Try again.', 'danger');
-            });
-    }
-
-    function goBackToStep1() {
-        console.log(' Go back to Step 1');
-        if (otpTimer) clearInterval(otpTimer);
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('step1').style.display = 'block';
-        document.getElementById('otpInput').value = '';
-        document.getElementById('timer').textContent = '10:00';
-        timeLeft = 600;
-    }
-
-    function startOtpTimer() {
-        if (otpTimer) clearInterval(otpTimer);
-        otpTimer = setInterval(() => {
-            timeLeft--;
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-            if (timeLeft <= 0) {
-                clearInterval(otpTimer);
-                document.getElementById('timer').textContent = 'Expired';
-                document.getElementById('timer').classList.remove('bg-warning');
-                document.getElementById('timer').classList.add('bg-danger');
-                showAlert(' OTP expired! Request new one.', 'warning');
-            }
-        }, 1000);
-    }
-
-    function toggleLoading(btn, loading) {
-        const textSpan = btn.querySelector('.btn-text');
-        const spinner = btn.querySelector('.spinner-border');
-
-        if (loading) {
-            btn.disabled = true;
-            if (textSpan) textSpan.style.opacity = '0.6';
-            if (spinner) spinner.classList.remove('d-none');
-        } else {
-            btn.disabled = false;
-            if (textSpan) textSpan.style.opacity = '1';
-            if (spinner) spinner.classList.add('d-none');
+            }, 1000);
         }
-    }
+    </script>
+</body>
 
-    function showAlert(message, type = 'info') {
-        // Remove existing alerts
-        document.querySelectorAll('.custom-alert').forEach(el => el.remove());
-
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show mb-4 custom-alert`;
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-
-        const cardBody = document.querySelector('.card-body');
-        const firstStep = cardBody.querySelector('.step-section');
-        if (firstStep) {
-            cardBody.insertBefore(alert, firstStep);
-        } else {
-            cardBody.prepend(alert);
-        }
-
-        setTimeout(() => {
-            if (alert.parentNode) alert.remove();
-        }, 5000);
-    }
-</script>
-{% endblock %}
+</html>

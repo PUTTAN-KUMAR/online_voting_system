@@ -30,7 +30,8 @@
                         {% for r in results %}
                         {% set total_votes.value = total_votes.value + (r.votes|int) %}
                         {% endfor %}
-                        {% set percentage = ((result.votes|int) / total_votes.value * 100)|round(1) if total_votes.value > 0 else 0 %}
+                        {% set percentage = ((result.votes|int) / total_votes.value * 100)|round(1) if total_votes.value
+                        > 0 else 0 %}
                         100)|round(1) : 0) %}
                         <div class="h3 fw-bold text-success mb-1">{{ percentage }}%</div>
                         <div class="text-muted">Share</div>

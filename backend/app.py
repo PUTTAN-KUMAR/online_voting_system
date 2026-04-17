@@ -16,6 +16,9 @@ app.secret_key = os.urandom(24).hex()  # ecure random key
 app.config.from_object(Config)
 mysql = MySQL(app)
 
+#  data time restriction 
+VOTING_START = datetime(2026, 4, 17, 0, 0, 0)
+VOTING_END   = datetime(2026, 4, 17, 23, 59, 59)
 # EMAIL CONFIG - UPDATE THESE
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -434,11 +437,25 @@ def dashboard():
         positions = cursor.fetchall()
 
         cursor.close()
-        return render_template('dashboard.html', user=user or {}, positions=positions or [])
+
+        # 🔥 sirf yaha add kiya hai
+        return render_template(
+            'dashboard.html',
+            user=user or {},
+            positions=positions or [],
+            voting_start=VOTING_START,
+            voting_end=VOTING_END
+        )
+
     except Exception as e:
         print(f"Dashboard Error: {e}")
-        return render_template('dashboard.html', user={}, positions=[])    
-    # condidate 
+        return render_template(
+            'dashboard.html',
+            user={},
+            positions=[],
+            voting_start=VOTING_START,
+            voting_end=VOTING_END
+        )    # condidate 
     
 @app.route('/candidates/<position>')
 def get_candidates(position):
@@ -461,17 +478,29 @@ def vote(position):
         return redirect(url_for('login'))
 
     if request.method == 'POST':
+
+        # TIME RESTRICTION (sabse pehle)
+        current_time = datetime.now()
+
+        if current_time < VOTING_START:
+            flash("Voting has not started yet!", "warning")
+            return redirect(url_for('dashboard'))
+
+        if current_time > VOTING_END:
+            flash("Voting time is over!", "danger")
+            return redirect(url_for('dashboard'))
+
         try:
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             user_id = session['user_id']
             candidate_id = request.form.get('candidate')
 
-            #  Candidate select nahi kiya
+            # Candidate select nahi kiya
             if not candidate_id:
                 flash("Please select a candidate!", "warning")
                 return redirect(request.url)
 
-            #  Candidate se position nikaalo (IMPORTANT FIX)
+            # Candidate se position nikaalo
             cursor.execute(
                 "SELECT position FROM candidates WHERE id = %s",
                 (candidate_id,)
@@ -482,17 +511,17 @@ def vote(position):
                 flash("Invalid candidate!", "danger")
                 return redirect(url_for('dashboard'))
 
-            position = result['position']   #  yahi main fix hai
+            position = result['position']
 
-            # Duplicate vote check (ab sahi kaam karega)
+            #  Candidate-wise duplicate check
             cursor.execute(
-                "SELECT id FROM votes WHERE user_id = %s AND position = %s",
-                (user_id, position)
+                "SELECT id FROM votes WHERE user_id = %s AND candidate_id = %s",
+                (user_id, candidate_id)
             )
 
             if cursor.fetchone():
                 cursor.close()
-                flash("You already voted for this position!", "warning")
+                flash("You already voted for this candidate!", "warning")
                 return redirect(url_for('dashboard'))
 
             # Insert vote
@@ -500,10 +529,12 @@ def vote(position):
                 "INSERT INTO votes (user_id, candidate_id, position) VALUES (%s, %s, %s)",
                 (user_id, candidate_id, position)
             )
+
+            # Update vote count
             cursor.execute(
-    "UPDATE candidates SET votes = votes + 1 WHERE id = %s",
-    (candidate_id,)
-)
+                "UPDATE candidates SET votes = votes + 1 WHERE id = %s",
+                (candidate_id,)
+            )
 
             # Update user
             cursor.execute(
@@ -514,15 +545,19 @@ def vote(position):
             mysql.connection.commit()
             cursor.close()
 
-            flash(" Vote submitted successfully!", "success")
+            flash("Vote submitted successfully!", "success")
             return redirect(url_for('results'))
 
         except Exception as e:
-            mysql.connection.rollback()
-            print("Vote Error:", e)
-            flash(" Vote failed!", "danger")
-            return redirect(request.url)
+           mysql.connection.rollback()
+           print("Vote Error:", e)
 
+           if "Duplicate entry" in str(e):
+               flash("You already voted for this candidate!", "warning")
+        else:
+         flash("Vote failed!", "danger")
+
+        return redirect(request.url)
     # GET PART
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -536,8 +571,12 @@ def vote(position):
         cursor.close()
     except:
         candidates = []
-
-    return render_template('vote.html', candidates=candidates, position=position)
+    return render_template(
+    'vote.html',
+    candidates=candidates,
+    position=position,
+    voting_start=VOTING_START,
+    voting_end=VOTING_END)
 
 if __name__ == '__main__':
    
