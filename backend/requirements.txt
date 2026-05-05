@@ -7,8 +7,6 @@ Flask-Login==0.6.3
 Werkzeug==2.3.7
 Jinja2==3.1.2
 MarkupSafe==2.1.5
-<<<<<<< HEAD
+
 gunicorn
-=======
-gunicorn 
->>>>>>> d33b7e0e0314ef355229b7c9111cbdc562353a59
+
