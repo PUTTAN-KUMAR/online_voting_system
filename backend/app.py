@@ -16,9 +16,28 @@ app.secret_key = os.urandom(24).hex()  # ecure random key
 app.config.from_object(Config)
 mysql = MySQL(app)
 
-#  data time restriction 
-VOTING_START = datetime(2026, 4, 17, 0, 0, 0)
-VOTING_END   = datetime(2026, 4, 17, 23, 59, 59)
+#  # TOP mein ye line dhundo aur replace karo:
+# VOTING_START = datetime(2026, 4, 17, 0, 0, 0)
+# VOTING_END   = datetime(2026, 4, 17, 23, 59, 59)
+
+# YE LAGAO (Dynamic loading):
+def load_voting_schedule():
+    global VOTING_START, VOTING_END
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT start_time, end_time FROM voting_schedule ORDER BY updated_at DESC LIMIT 1")
+        result = cursor.fetchone()
+        cursor.close()
+        if result:
+            VOTING_START = result['start_time']
+            VOTING_END = result['end_time']
+    except:
+        # Default fallback
+        VOTING_START = datetime(2026, 4, 17, 0, 0, 0)
+        VOTING_END = datetime(2026, 4, 17, 23, 59, 59)
+
+# App start pe load karo
+load_voting_schedule()
 # EMAIL CONFIG - UPDATE THESE
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -425,37 +444,35 @@ def logout():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        # User info
-        cursor.execute("SELECT has_voted, username FROM users WHERE id = %s", (session['user_id'],))
-        user = cursor.fetchone()
+        # ✅ Candidates
+        cursor.execute("SELECT * FROM candidates ORDER BY position")
+        candidates = cursor.fetchall()
 
-        #  Fetch positions from positions table (FIXED)
-        cursor.execute("SELECT name FROM positions ORDER BY name")
-        positions = cursor.fetchall()
+        # ✅ User fetch (IMPORTANT)
+        cursor.execute(
+            "SELECT has_voted, username FROM users WHERE id = %s",
+            (session['user_id'],)
+        )
+        user = cursor.fetchone()
 
         cursor.close()
 
-        # 🔥 sirf yaha add kiya hai
         return render_template(
             'dashboard.html',
-            user=user or {},
-            positions=positions or [],
+            candidates=candidates,
+            user=user,   # 🔥 YE LINE MISSING THI
             voting_start=VOTING_START,
             voting_end=VOTING_END
         )
 
     except Exception as e:
-        print(f"Dashboard Error: {e}")
-        return render_template(
-            'dashboard.html',
-            user={},
-            positions=[],
-            voting_start=VOTING_START,
-            voting_end=VOTING_END
-        )    # condidate 
+        print("Dashboard Error:", e)
+        return render_template('dashboard.html', candidates=[], user={})    
+     # condidate 
     
 @app.route('/candidates/<position>')
 def get_candidates(position):
@@ -577,6 +594,164 @@ def vote(position):
     position=position,
     voting_start=VOTING_START,
     voting_end=VOTING_END)
+# ========== ADMIN ROUTES ==========
+# ========== ADMIN ROUTES (COMPLETE SEPARATE) ==========
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """COMPLTELY SEPARATE Admin Login"""
+    if 'is_admin' in session:
+        return redirect(url_for('admin_panel'))
+        
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        if username == 'admin' and password == 'admin123':
+            session['is_admin'] = True
+            session['admin_username'] = username
+            flash('Admin login successful!', 'success')
+            return redirect(url_for('admin_panel'))
+        else:
+            flash('Invalid admin credentials!', 'danger')
+    
+    return render_template('admin_login.html')
+
+
+# ================= ADMIN PANEL =================
+@app.route('/admin', methods=['GET', 'POST'])
+def admin_panel():
+    """Admin Panel - Add / Delete / Time / Reset"""
+    if not session.get('is_admin'):
+        return redirect(url_for('admin_login'))
+    
+    message = None
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        try:
+            cursor = mysql.connection.cursor()
+            
+            # ================= ADD CANDIDATE =================
+            if action == 'add_candidate':
+                name = request.form.get('candidate_name', '').strip()
+                party = request.form.get('party', '').strip()
+                position = request.form.get('position', '').strip()
+                
+                if name and party and position:
+                    cursor.execute("""
+                        INSERT INTO candidates (name, party, position, votes, created_at) 
+                        VALUES (%s, %s, %s, 0, NOW())
+                    """, (name, party, position))
+                    mysql.connection.commit()
+                    message = f'Candidate {name} added successfully!'
+
+            # ================= DELETE CANDIDATE (NEW FIX) =================
+            elif action == 'delete_candidate':
+                candidate_id = request.form.get('candidate_id')
+
+                if candidate_id:
+                    cursor.execute(
+                        "DELETE FROM candidates WHERE id = %s",
+                        (candidate_id,)
+                    )
+                    mysql.connection.commit()
+                    message = 'Candidate deleted successfully!'
+
+            # ================= SET TIME =================
+            elif action == 'set_time_restriction':
+                global VOTING_START, VOTING_END
+                
+                start_str = request.form.get('voting_start')
+                end_str = request.form.get('voting_end')
+                
+                if start_str and end_str:
+                    VOTING_START = datetime.fromisoformat(start_str.replace('T', ' ') + ':00')
+                    VOTING_END = datetime.fromisoformat(end_str.replace('T', ' ') + ':00')
+                    
+                    cursor.execute("""
+                        CREATE TABLE IF NOT EXISTS voting_schedule (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            start_time DATETIME,
+                            end_time DATETIME,
+                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )
+                    """)
+                    
+                    cursor.execute("""
+                        INSERT INTO voting_schedule (start_time, end_time) 
+                        VALUES (%s, %s)
+                    """, (VOTING_START, VOTING_END))
+                    
+                    mysql.connection.commit()
+                    message = 'Voting time updated!'
+
+            # ================= RESET VOTES =================
+            elif action == 'reset_votes':
+                cursor.execute("DELETE FROM votes")
+                cursor.execute("UPDATE candidates SET votes = 0")
+                mysql.connection.commit()
+                message = 'All votes reset!'
+
+            # ================= CLEAR CANDIDATES =================
+            elif action == 'clear_candidates':
+                cursor.execute("DELETE FROM candidates")
+                mysql.connection.commit()
+                message = 'All candidates cleared!'
+            
+            cursor.close()
+
+        except Exception as e:
+            mysql.connection.rollback()
+            message = f'Error: {str(e)}'
+
+    # ================= LOAD DATA =================
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        cursor.execute("SELECT * FROM candidates ORDER BY position, votes DESC")
+        candidates = cursor.fetchall()
+
+        cursor.execute("SELECT COUNT(*) as total_votes FROM votes")
+        total_votes = cursor.fetchone()['total_votes'] or 0
+
+        cursor.execute("SELECT COUNT(*) as total_users FROM users WHERE role='voter'")
+        total_users = cursor.fetchone()['total_users'] or 0
+
+        cursor.execute("SELECT name FROM positions ORDER BY name")
+        positions = [row['name'] for row in cursor.fetchall()]
+
+        cursor.close()
+
+    except:
+        candidates, total_votes, total_users, positions = [], 0, 0, []
+
+    data = {
+        'candidates': candidates,
+        'total_votes': total_votes,
+        'total_users': total_users,
+        'positions': positions,
+        'voting_start': VOTING_START.strftime('%Y-%m-%dT%H:%M'),
+        'voting_end': VOTING_END.strftime('%Y-%m-%dT%H:%M'),
+        'is_voting_active': VOTING_START <= datetime.now() <= VOTING_END,
+        'message': message
+    }
+
+    return render_template('admin.html', data=data)
+
+
+# ================= ADMIN LOGOUT =================
+@app.route('/admin/logout')
+def admin_logout():
+    """Admin logout safely"""
+    
+    # Clear only admin session
+    session.pop('is_admin', None)
+    session.pop('admin_username', None)
+    
+    flash('👋 Admin logged out successfully!', 'info')
+    
+    return redirect(url_for('admin_login'))
 
 if __name__ == '__main__':
    

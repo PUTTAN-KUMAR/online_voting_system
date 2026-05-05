@@ -430,21 +430,27 @@
     </div>
 
     <!-- Admin Modal -->
-    <div class="modal fade feature-modal" id="adminModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <i class="fas fa-tachometer-alt feature-icon"></i>
-                    <h5 class="modal-title">Admin Dashboard</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <h3>⚡ Complete Control</h3>
-                    <p class="lead">Manage everything from one dashboard.
-                </div>
+<div class="modal fade feature-modal" id="adminModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-tachometer-alt feature-icon"></i>
+                <h5 class="modal-title">Admin</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h3>⚡ Complete Control</h3>
+                <p class="lead">Manage everything from one dashboard.</p>
+
+                <!-- ✅ ADD THIS BUTTON -->
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-light btn-lg mt-3">
+                    Go to Admin Panel
+                </a>
+
             </div>
         </div>
     </div>
+</div>
 
     <!-- Main Content -->
     <div class="container-fluid mt-5 pt-4">
