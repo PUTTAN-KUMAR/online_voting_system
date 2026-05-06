@@ -185,7 +185,7 @@
         let timeLeft = 600;
 
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('✅ Register page loaded!');
+            console.log('Register page loaded!');
 
             // Numeric input formatting
             ['aadhaar', 'mobile', 'otpInput'].forEach(id => {
@@ -245,7 +245,7 @@
                         document.getElementById('otpInput').focus();
                         timeLeft = 600;
                         startOtpTimer();
-                        alert('✅ OTP sent to ' + formData.email + '\nCheck your email!');
+                        alert('OTP sent to ' + formData.email + '\nCheck your email!');
                     } else {
                         alert('Error: ' + data.error);
                     }
@@ -277,7 +277,7 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        alert('✅ OTP Verified! Registering...');
+                        alert('OTP Verified! Registering...');
 
                         // Submit form
                         const form = document.createElement('form');
@@ -295,7 +295,7 @@
                         document.body.appendChild(form);
                         form.submit();
                     } else {
-                        alert('❌ ' + data.error);
+                        alert('' + data.error);
                         document.getElementById('otpInput').value = '';
                         document.getElementById('otpInput').focus();
                     }

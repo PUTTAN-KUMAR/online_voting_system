@@ -9,24 +9,23 @@
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">
-                    <i class="fas fa-vote-yea me-3"></i>
-                    VoteSecure
-                </h1>
-                <p class="lead mb-5 opacity-90 animate__animated animate__fadeInUp">
-                    Secure, Transparent & Anonymous Online Voting Platform
-                </p>
-
-                <!-- 🔥 FIXED LOGIN BUTTONS -->
+            <h1 class="display-1 fw-bold mb-4 animate__animated animate__fadeInDown" style="color:#1e90ff;">
+                <i class="fas fa-vote-yea me-3"></i>
+                VoteSecure
+            </h1>
+            <p class="lead mb-5 opacity-90 animate__animated animate__fadeInUp" style="color:#1e90ff;">
+                Secure, Transparent & Anonymous Online Voting Platform
+            </p>
+                <!--  FIXED LOGIN BUTTONS -->
                 <div class="d-flex flex-wrap justify-content-center gap-3 mb-4 animate__animated animate__zoomIn">
                     {% if session.get('otp_sent') %}
                     <a class="btn btn-success btn-lg px-5 py-3 shadow-lg" href="{{ url_for('verify_email_otp') }}">
-                        <i class="fas fa-mobile-alt me-2"></i>✅ Continue with OTP
+                        <i class="fas fa-mobile-alt me-2"></i> Continue with OTP
                     </a>
                     {% else %}
-                    <!-- ✅ FIXED: email_login → login -->
+                    <!--  FIXED: email_login → login -->
                     <a class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg" href="{{ url_for('login') }}">
-                        <i class="fas fa-envelope me-2"></i>📧 Email Login
+                        <i class="fas fa-envelope me-2"></i> Email Login
                     </a>
                     {% endif %}
 

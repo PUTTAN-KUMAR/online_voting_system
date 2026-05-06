@@ -448,11 +448,11 @@ def dashboard():
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        # ✅ Candidates
+        #  Candidates
         cursor.execute("SELECT * FROM candidates ORDER BY position")
         candidates = cursor.fetchall()
 
-        # ✅ User fetch (IMPORTANT)
+        #  User fetch (IMPORTANT)
         cursor.execute(
             "SELECT has_voted, username FROM users WHERE id = %s",
             (session['user_id'],)
@@ -464,7 +464,7 @@ def dashboard():
         return render_template(
             'dashboard.html',
             candidates=candidates,
-            user=user,   # 🔥 YE LINE MISSING THI
+            user=user,   #  YE LINE MISSING THI
             voting_start=VOTING_START,
             voting_end=VOTING_END
         )
@@ -594,7 +594,7 @@ def vote(position):
     position=position,
     voting_start=VOTING_START,
     voting_end=VOTING_END)
-# ========== ADMIN ROUTES ==========
+
 # ========== ADMIN ROUTES (COMPLETE SEPARATE) ==========
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -749,7 +749,7 @@ def admin_logout():
     session.pop('is_admin', None)
     session.pop('admin_username', None)
     
-    flash('👋 Admin logged out successfully!', 'info')
+    flash('Admin logged out successfully!', 'info')
     
     return redirect(url_for('admin_login'))
 
